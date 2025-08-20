@@ -1,0 +1,46 @@
+# .gitignore for .NET, MCPServer, and Visual Studio
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider project files
+.idea/
+*.sln.iml
+
+# DotCover
+*.dotCover
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# NuGet packages
+*.nupkg
+# Package directories
+packages/
+# Visual Studio Code workspace
+*.code-workspace
+
+# Test results
+TestResults/
+
+# Others
+*.vspscc
+*.vssscc
+*.dbmdl
+*.pdb
+*.cache
+*.config
+*.vs
+
+# MCPServer specific
+MCPServer/Data/*.sqlite

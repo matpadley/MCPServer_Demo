@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "MCPServer_Local": {
+      "type": "http",
+      "url": "http://localhost:5226/api/mcp"
+    }
+  }
+}
