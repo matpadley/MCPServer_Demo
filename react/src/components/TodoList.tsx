@@ -37,7 +37,7 @@ export const TodoList: React.FC<Props> = ({ refreshTrigger }) => {
     setError(null);
 
     try {
-      const result = await mcpService.callTool('read_todos', {});
+      const result = await mcpService.callTool('read_todos', {}) as { content?: string | any[] };
       
       // Parse the result - the MCP server returns content as string
       let todoList: Todo[] = [];
