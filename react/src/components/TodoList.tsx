@@ -37,7 +37,7 @@ export const TodoList: React.FC<Props> = ({ refreshTrigger }) => {
     setError(null);
 
     try {
-      const result = await mcpService.callTool('read_todos', {}) as { content?: string | any[] };
+  const result = await mcpService.callTool('read_todos', {}) as { content?: string | unknown[] };
       
       // Parse the result - the MCP server returns content as string
       let todoList: Todo[] = [];
@@ -50,7 +50,7 @@ export const TodoList: React.FC<Props> = ({ refreshTrigger }) => {
             todoList = JSON.parse(jsonMatch[0]);
           }
         } else if (Array.isArray(content)) {
-          todoList = content;
+          todoList = content as Todo[];
         }
       }
 
