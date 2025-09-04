@@ -1,6 +1,6 @@
 # Comprehensive Testing Infrastructure
 
-This repository includes comprehensive test suites for all three main implementations, demonstrating best practices for testing MCP (Model Context Protocol) applications across different technology stacks.
+This repository includes comprehensive test suites for all four main implementations, demonstrating best practices for testing MCP (Model Context Protocol) applications across different technology stacks.
 
 ## 🧪 Test Coverage Overview
 
@@ -8,9 +8,10 @@ This repository includes comprehensive test suites for all three main implementa
 |----------------|-----------|----------------|------------|---------|
 | **🔵 .NET Server** | xUnit + EF InMemory | TodosMcpTool CRUD operations | 14 tests | ✅ Passing |
 | **🟡 TypeScript Server** | Jest | TodosMcpTool & DatabaseContext | 31 tests | ✅ Passing |
+| **🔷 Go Server** | Go testing + SQLite InMemory | Data layer & MCP tools | 34 tests | ✅ Passing |
 | **⚛️ React Client** | Jest + Testing Library | MCPService & HTTP calls | 14 tests | ✅ Passing |
 
-**Total: 59 comprehensive tests** covering core MCP functionality and edge cases.
+**Total: 93 comprehensive tests** covering core MCP functionality and edge cases.
 
 ## 🔵 .NET Server Tests (`dotnet/MCPServer.Tests/`)
 
@@ -84,6 +85,47 @@ describe('TodosMcpTool', () => {
 });
 ```
 
+## 🔷 Go Server Tests (`go/internal/`)
+
+### Technology Stack
+- **Go Testing**: Built-in testing framework with table-driven tests
+- **SQLite In-Memory**: Isolated database testing per test case
+- **Comprehensive Coverage**: Database layer and MCP tools testing
+
+### Test Structure
+- **`data/database_test.go`**: 16 tests for database operations
+- **`tools/todos_mcp_tool_test.go`**: 18 tests for MCP tool operations
+
+### Running Go Tests
+```bash
+cd go
+go test ./...               # Run all tests
+go test -v ./...           # Verbose output
+go test -cover ./...       # Generate coverage reports
+go test -bench=. ./...     # Run benchmarks
+```
+
+### Go Testing Patterns
+```go
+func TestCreateTodoAsync(t *testing.T) {
+  db, err := data.NewInMemoryDatabaseContext()
+  if err != nil {
+    t.Fatalf("Failed to create in-memory database: %v", err)
+  }
+  defer db.Close()
+
+  tool := tools.NewTodosMcpTool(db)
+  result, err := tool.CreateTodoAsync("Test todo", time.Now())
+  
+  if err != nil {
+    t.Fatalf("CreateTodoAsync failed: %v", err)
+  }
+  if !strings.Contains(result, "Todo created:") {
+    t.Errorf("Expected success message, got: %s", result)
+  }
+}
+```
+
 ## ⚛️ React Client Tests (`react/tests/`)
 
 ### Technology Stack
@@ -134,6 +176,9 @@ cd dotnet && dotnet test MCPServer.Tests
 
 # TypeScript Server Tests  
 cd typescript && npm test
+
+# Go Server Tests
+cd go && go test ./...
 
 # React Client Tests
 cd react && npm test

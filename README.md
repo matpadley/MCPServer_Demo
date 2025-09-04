@@ -49,6 +49,23 @@ npm start
 ```
 📖 [View TypeScript Documentation](./typescript/README.md)
 
+#### 🔷 Go Implementation (`go/`)
+A high-performance Go implementation using standard libraries and SQLite.
+
+**Technology Stack:**
+- Go (v1.21+)
+- SQLite3
+- Standard HTTP server
+- Built-in testing framework
+
+**Quick Start:**
+```bash
+cd go
+go build ./cmd/mcpserver
+./mcpserver
+```
+📖 [View Go Documentation](./go/README.md)
+
 ### 🖼️ Client Implementations
 
 #### 🟠 ExtJS Client (`extjs/`)
@@ -105,18 +122,18 @@ All implementations provide the same MCP tool functionality:
 
 ## Architecture Comparison
 
-| Aspect | .NET | TypeScript | ExtJS | React |
-|--------|------|------------|-------|-------|
-| **Type** | Server | Server | Client | Client |
-| **Language** | C# | TypeScript | JavaScript | TypeScript |
-| **Runtime** | .NET 8.0 | Node.js 20+ | Browser | Browser |
-| **Database** | Entity Framework Core | SQLite3 direct | HTTP calls to MCP | HTTP calls to MCP |
-| **Async Pattern** | Task&lt;T&gt; | Promise&lt;T&gt; | Promises | Promises |
-| **DI Container** | Built-in | Constructor injection | Manual | React Context |
-| **Tool Discovery** | Reflection + Attributes | Manual registration | MCP calls | MCP calls |
-| **Transport** | HTTP | Stdio | HTTP | HTTP |
-| **UI Framework** | N/A | N/A | ExtJS | Material-UI |
-| **Type Safety** | Strong typing | TypeScript typing | Runtime | TypeScript typing |
+| Aspect | .NET | TypeScript | Go | ExtJS | React |
+|--------|------|------------|-----|-------|-------|
+| **Type** | Server | Server | Server | Client | Client |
+| **Language** | C# | TypeScript | Go | JavaScript | TypeScript |
+| **Runtime** | .NET 8.0 | Node.js 20+ | Go 1.21+ | Browser | Browser |
+| **Database** | Entity Framework Core | SQLite3 direct | SQLite3 direct | HTTP calls to MCP | HTTP calls to MCP |
+| **Async Pattern** | Task&lt;T&gt; | Promise&lt;T&gt; | Goroutines + sync | Promises | Promises |
+| **DI Container** | Built-in | Constructor injection | Interface-based | Manual | React Context |
+| **Tool Discovery** | Reflection + Attributes | Manual registration | Manual registration | MCP calls | MCP calls |
+| **Transport** | HTTP | Stdio | HTTP | HTTP | HTTP |
+| **UI Framework** | N/A | N/A | N/A | ExtJS | Material-UI |
+| **Type Safety** | Strong typing | TypeScript typing | Strong typing | Runtime | TypeScript typing |
 
 ## Repository Structure
 ```
@@ -133,6 +150,14 @@ MCPServer_Demo/
 │   │   └── index.ts            # Main server
 │   ├── package.json            # Node.js dependencies
 │   └── README.md               # TypeScript documentation
+├── go/                         # Go server implementation
+│   ├── cmd/mcpserver/          # Application entry point
+│   ├── internal/               # Internal packages
+│   │   ├── data/               # Data models and database
+│   │   ├── tools/              # MCP tool implementations
+│   │   └── server/             # HTTP MCP server
+│   ├── go.mod                  # Go module definition
+│   └── README.md               # Go documentation
 ├── extjs/                      # ExtJS client implementation
 │   ├── app.js                  # Complete ExtJS application
 │   ├── index.html              # HTML page with ExtJS CDN
@@ -163,6 +188,11 @@ MCPServer_Demo/
 ### For TypeScript Implementation  
 - **Node.js 20.x** or later
 - **npm** (comes with Node.js)
+
+### For Go Implementation
+- **Go 1.21.x** or later
+- **CGO enabled** (required for SQLite driver)
+- **Git** (for go modules)
 
 ### For ExtJS Client
 - **Web Server** (Python's built-in server, Node.js http-server, etc.)
@@ -205,6 +235,14 @@ npm start
 ```
 The TypeScript server runs via stdio transport for direct MCP communication
 
+**Start Go Server (in a new terminal):**
+```bash
+cd go
+go build ./cmd/mcpserver
+./mcpserver
+```
+The Go server will start on `http://localhost:8080`
+
 ### 3. Run Client Implementations
 
 **Start ExtJS Client (in a new terminal):**
@@ -223,8 +261,8 @@ npm run dev
 ```
 
 ### 4. Explore the Full Stack
-- **Servers**: Both .NET and TypeScript provide the same MCP tools
-- **Clients**: Both ExtJS and React can connect to either server
+- **Servers**: .NET, TypeScript, and Go all provide the same MCP tools
+- **Clients**: Both ExtJS and React can connect to any of the servers
 - **Protocol**: All implementations use the standard MCP protocol
 
 ## MCP Protocol Integration
@@ -247,13 +285,14 @@ All implementations follow the Model Context Protocol specification:
           │                      │
     ┌─────▼──────────────────────▼─────┐
     │         MCP Protocol Layer        │
-    └─────┬──────────────────────┬─────┘
-          │                      │
-          │                      │
-┌─────────▼───────┐    ┌─────────▼───────┐
-│  .NET Server    │    │TypeScript Server│
-│ (Entity Framework)   │   (SQLite3)     │
-└─────────────────┘    └─────────────────┘
+    └─┬─────┬──────────────────────┬───┘
+      │     │                      │
+      │     │                      │
+┌─────▼──┐ ┌▼─────────────┐ ┌─────▼───────┐
+│.NET    │ │ TypeScript   │ │Go Server    │
+│Server  │ │ Server       │ │(SQLite3)    │
+│(EF Core│ │ (SQLite3)    │ │             │
+└────────┘ └──────────────┘ └─────────────┘
 ```
 
 ### VS Code Integration
@@ -270,6 +309,10 @@ Configure MCP servers in `.vscode/MCP.json` for full integration:
       "type": "stdio",
       "command": "node",
       "args": ["typescript/dist/index.js"]
+    },
+    "MCPServer_Go": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp"
     }
   }
 }
@@ -302,6 +345,29 @@ public async Task<string> MyToolAsync(
 // Add handler in switch statement
 case 'my_tool':
   return await this.myTool(args.param);
+```
+
+**In Go:**
+```go
+// Add to tools list in mcp_server.go
+{
+  "name":        "my_tool",
+  "description": "Tool description",
+  "inputSchema": map[string]interface{}{
+    "type": "object",
+    "properties": map[string]interface{}{
+      "param": map[string]interface{}{
+        "type":        "string",
+        "description": "Parameter description",
+      },
+    },
+    "required": []string{"param"},
+  },
+}
+
+// Add handler in handleToolsCall
+case "my_tool":
+  s.handleMyTool(w, req, args)
 ```
 
 **In ExtJS Client:**
@@ -349,6 +415,12 @@ const MyToolComponent: React.FC = () => {
 - **npm install fails**: Try clearing npm cache (`npm cache clean --force`)
 - **TypeScript compilation errors**: Run `npm run build` to see detailed error messages
 
+#### Go Build Issues
+- **Go version mismatch**: Ensure Go 1.21+ is installed (`go version`)
+- **CGO not enabled**: Ensure CGO is enabled for SQLite driver (`echo $CGO_ENABLED`)
+- **Build fails**: Run `go mod tidy` and ensure all dependencies are downloaded
+- **Permission issues**: Ensure database file is writable or use in-memory database
+
 #### ExtJS Client Issues
 - **ExtJS not loading**: Check internet connection for CDN access, or download ExtJS locally
 - **MCP connection failed**: Verify server URL configuration in `app.js`
@@ -377,9 +449,10 @@ Each implementation includes comprehensive test coverage demonstrating best prac
 |----------------|-----------|------------|----------|
 | **🔵 .NET Server** | xUnit + EF InMemory | 14 tests | CRUD operations, edge cases |
 | **🟡 TypeScript Server** | Jest + SQLite | 31 tests | Business logic & data layer |
+| **🔷 Go Server** | Go testing + SQLite | 34 tests | Database & MCP tools |
 | **⚛️ React Client** | Jest + Testing Library | 14 tests | MCP service & HTTP mocking |
 
-**Total: 59 comprehensive tests** covering core MCP functionality across all stacks.
+**Total: 93 comprehensive tests** covering core MCP functionality across all stacks.
 
 ### Running All Tests
 ```bash
@@ -388,6 +461,9 @@ cd dotnet && dotnet test MCPServer.Tests
 
 # TypeScript Server Tests  
 cd typescript && npm test
+
+# Go Server Tests
+cd go && go test ./...
 
 # React Client Tests
 cd react && npm test
@@ -415,14 +491,15 @@ We welcome contributions to all implementations! Please follow these guidelines:
 ### Code Style
 - **.NET**: Follow Microsoft C# coding standards and use dependency injection
 - **TypeScript**: Use TypeScript strict mode and async/await patterns
+- **Go**: Follow Go best practices, use interfaces, and proper error handling
 - **ExtJS**: Follow ExtJS MVC patterns and component lifecycle
 - **React**: Use functional components, hooks, and TypeScript best practices
 - **Documentation**: Update README files and inline comments for significant changes
 
 ### Adding New MCP Tools
 When adding new functionality, ensure all implementations provide the same tool interface:
-- Use consistent parameter names and types across server implementations
-- Provide equivalent error handling in both servers
+- Use consistent parameter names and types across server implementations (.NET, TypeScript, Go)
+- Provide equivalent error handling in all servers
 - Update client implementations to support new tools
 - Update tool documentation in all README files
 
@@ -441,5 +518,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For detailed implementation-specific information, see:
 - 📖 [.NET Documentation](./dotnet/README.md)
 - 📖 [TypeScript Documentation](./typescript/README.md)
+- 📖 [Go Documentation](./go/README.md)
 - 📖 [ExtJS Documentation](./extjs/README.md)
 - 📖 [React Documentation](./react/README.md)
