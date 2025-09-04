@@ -1,99 +1,190 @@
-# MCPServer
+# MCPServer Demo
 
-> This project is based on the official tutorial: [AI Model Context Protocol Server with .NET](https://learn.microsoft.com/en-us/azure/app-service/tutorial-ai-model-context-protocol-server-dotnet)
+A multi-language implementation of a Model Context Protocol (MCP) server with Todo management functionality, showcasing the same MCP tools implemented in both .NET and TypeScript.
 
-## Project Name and Description
-MCPServer is a multi-project .NET solution designed to provide a robust, extensible Model Context Protocol (MCP) server. It exposes business logic as discoverable tools, supports clean separation of concerns, and enables rapid development of data-driven APIs and automation workflows.
+> The .NET implementation is based on the official tutorial: [AI Model Context Protocol Server with .NET](https://learn.microsoft.com/en-us/azure/app-service/tutorial-ai-model-context-protocol-server-dotnet)
 
-## Technology Stack
-- .NET 9.0 (C#)
-- Entity Framework Core (EF Core)
-- xUnit (for testing)
-- SQLite (or in-memory DB for development/testing)
+## Project Overview
+This repository demonstrates how to build MCP servers using different technology stacks while maintaining the same functionality and tool interfaces. Both implementations provide identical Todo management capabilities through the Model Context Protocol.
 
-## Project Architecture
-- **Service Layer:** Main API logic in `MCPServer/` (e.g., `TodosMcpTool.cs`)
-- **Data Layer:** Entity definitions and EF Core context in `MCPServer.Data/`
-- **Testing Layer:** Unit/integration tests in `MCPServer.Data.Tests/`
-- **Tool Discovery:** Business logic exposed via `[McpServerTool]` attributes for automatic discovery and invocation
-- **Dependency Injection:** All services/tools use DI for context and services
+## Implementations
 
-## Getting Started
-1. **Prerequisites:**
-   - .NET 9.0 SDK
-   - Visual Studio or VS Code
-2. **Installation:**
-   - Clone the repository
-   - Restore NuGet packages: `dotnet restore MCPServer.sln`
-3. **Setup:**
-   - Configure connection strings in `appsettings.json` (default is SQLite or in-memory)
-   - Build: `dotnet build MCPServer.sln`
-   - Run: `dotnet run --project MCPServer`
-   - Test: `dotnet test MCPServer.Data.Tests`
+### 🔵 .NET Implementation (`dotnet/`)
+A robust .NET 8.0 solution using Entity Framework Core and dependency injection.
 
-## Project Structure
+**Technology Stack:**
+- .NET 8.0 (C#)
+- Entity Framework Core
+- SQLite/In-memory database
+- ModelContextProtocol.AspNetCore
+
+**Quick Start:**
+```bash
+cd dotnet
+dotnet build MCPServer.sln
+dotnet run --project MCPServer
 ```
-MCPServer.sln
-MCPServer/           # Main API/service layer
-MCPServer.Data/      # Data access layer (EF Core)
-MCPServer.Data.Tests/# Unit/integration tests
+📖 [View .NET Documentation](./dotnet/README.md)
+
+### 🟡 TypeScript Implementation (`typescript/`)
+A modern Node.js implementation using TypeScript and SQLite.
+
+**Technology Stack:**
+- Node.js (v20+)
+- TypeScript
+- SQLite3
+- @modelcontextprotocol/sdk
+
+**Quick Start:**
+```bash
+cd typescript
+npm install
+npm run build
+npm start
 ```
-- Key files: `TodosMcpTool.cs`, `DatabaseContext.cs`, `Todo.cs`, `DatabaseContextTests.cs`
+📖 [View TypeScript Documentation](./typescript/README.md)
 
-## Key Features
-- Discoverable MCP tools for business logic
-- Async/await for all DB operations
-- Clean separation of service/data/test layers
-- Automated tool discovery via attributes
-- Example: Add a new todo with `CreateTodoAsync(description, createdDate)`
+## Common Features
+Both implementations provide identical MCP tool functionality:
 
-## Development Workflow
-- Build: `dotnet build MCPServer.sln`
-- Run: `dotnet run --project MCPServer`
-- Test: `dotnet test MCPServer.Data.Tests`
-- Debug: Use launch profiles in `Properties/launchSettings.json`
-- Branching: (Not specified; use standard Git workflows)
+| Tool | Description | Parameters |
+|------|-------------|------------|
+| **create_todo** | Creates a new todo | `description`, `createdDate` |
+| **read_todos** | Reads all todos or a specific todo | `id` (optional) |
+| **update_todo** | Updates todo fields by id | `id`, `description` (optional), `createdDate` (optional) |
+| **delete_todo** | Deletes a todo by id | `id` |
 
+## Architecture Comparison
 
-## Configuring MCPServer in VS Code
-To connect and interact with your MCPServer instance from VS Code, follow these steps:
+| Aspect | .NET | TypeScript |
+|--------|------|------------|
+| **Language** | C# | TypeScript |
+| **Runtime** | .NET 8.0 | Node.js 20+ |
+| **Database** | Entity Framework Core | SQLite3 direct |
+| **Async Pattern** | Task&lt;T&gt; | Promise&lt;T&gt; |
+| **DI Container** | Built-in | Constructor injection |
+| **Tool Discovery** | Reflection + Attributes | Manual registration |
+| **Transport** | HTTP | Stdio |
+| **Type Safety** | Strong typing | TypeScript typing |
 
-1. Open the `.vscode/MCP.json` file in your project root.
-2. Add or update a server entry with your MCPServer endpoint. Example:
-   ```json
-   {
-     "servers": {
-       "MCPServer_Local": {
-         "type": "http",
-         "url": "http://localhost:5226/api/mcp"
-       }
-     }
-   }
+## Repository Structure
+```
+MCPServer_Demo/
+├── dotnet/                    # .NET implementation
+│   ├── MCPServer/             # Main web API project
+│   ├── MCPServer.Data/        # Data access layer  
+│   ├── MCPServer.sln          # Solution file
+│   └── README.md              # .NET documentation
+├── typescript/                # TypeScript implementation
+│   ├── src/                   # Source code
+│   │   ├── data/              # Data models and database
+│   │   ├── tools/             # MCP tool implementations
+│   │   └── index.ts           # Main server
+│   ├── package.json           # Node.js dependencies
+│   └── README.md              # TypeScript documentation
+├── README.md                  # This file
+└── .github/                   # GitHub configuration
+    └── copilot-instructions.md
+```
+
+## Getting Started with Both
+
+### Prerequisites
+- **.NET:** .NET 8.0 SDK
+- **TypeScript:** Node.js 20+ and npm
+
+### Try Both Implementations
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd MCPServer_Demo
    ```
-3. Save the file. VS Code extensions and tools that support MCP will automatically detect and use this configuration.
-4. If running MCPServer on a different port or host, update the `url` field accordingly.
-5. For remote or cloud deployments, add additional server entries with the appropriate URLs.
 
-**Tip:** Some MCP-aware extensions may provide UI for managing server connections, but manual editing of `.vscode/MCP.json` is always supported.
+2. **Run .NET Version**
+   ```bash
+   cd dotnet
+   dotnet restore
+   dotnet build
+   dotnet run --project MCPServer
+   ```
 
-## Coding Standards
-- Use dependency injection for all services
-- Decorate MCP tool methods and parameters with `[Description]` for clarity
-- Keep entities in `MCPServer.Data`
-- Do not hardcode connection strings; use `appsettings.json`
-- Add tests for new features in `MCPServer.Data.Tests`
+3. **Run TypeScript Version** (in a new terminal)
+   ```bash
+   cd typescript
+   npm install
+   npm run build
+   npm start
+   ```
 
-## Testing
-- All data logic tested with xUnit and EF Core in-memory provider
-- Example test: `DatabaseContextTests.cs` covers CRUD operations for todos
+## MCP Protocol Integration
+Both implementations follow the Model Context Protocol specification:
+
+- **Tool Discovery:** Automatic exposure of available tools
+- **Standardized Interface:** Consistent tool schemas across implementations  
+- **Error Handling:** Meaningful error responses
+- **Type Validation:** Parameter validation and type checking
+
+### VS Code Integration
+Configure MCP servers in `.vscode/MCP.json`:
+```json
+{
+  "servers": {
+    "MCPServer_DotNet": {
+      "type": "http", 
+      "url": "http://localhost:5226/api/mcp"
+    },
+    "MCPServer_TypeScript": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["typescript/dist/index.js"]
+    }
+  }
+}
+```
+
+## Development Patterns
+
+### Adding New Tools
+**In .NET:**
+```csharp
+[McpServerTool, Description("Tool description")]
+public async Task<string> MyToolAsync(
+    [Description("Parameter description")] string param) 
+{
+    // Implementation
+}
+```
+
+**In TypeScript:**
+```typescript
+// Add to tool list in index.ts
+{
+  name: 'my_tool',
+  description: 'Tool description',
+  inputSchema: { /* JSON Schema */ }
+}
+
+// Add handler in switch statement
+case 'my_tool':
+  return await this.myTool(args.param);
+```
+
+## Testing Both Implementations
+Each implementation includes its own testing approach:
+- **.NET:** xUnit with Entity Framework in-memory provider (when tests are added)
+- **TypeScript:** Standard Node.js testing patterns (when tests are added)
+
+## Contributing
+1. Choose the implementation you want to contribute to
+2. Follow the technology-specific patterns and conventions
+3. Ensure both implementations maintain feature parity when adding new tools
+4. Update documentation for both versions when making significant changes
 
 ## License
-- (License information not found; please add if available)
+(License information not found; please add if available)
 
 ---
 
-For more details, see:
-- `.github/copilot-instructions.md` (AI agent guidance)
-- `MCPServer/TodosMcpTool.cs` (tool logic)
-- `MCPServer.Data/DatabaseContext.cs` (EF Core context)
-- `MCPServer.Data.Tests/DatabaseContextTests.cs` (tests)
+For detailed implementation-specific information, see:
+- 📖 [.NET Documentation](./dotnet/README.md)
+- 📖 [TypeScript Documentation](./typescript/README.md)
