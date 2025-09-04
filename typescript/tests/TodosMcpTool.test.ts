@@ -18,11 +18,9 @@ describe('TodosMcpTool', () => {
     testDbPath = path.join(__dirname, `test-${Date.now()}-${Math.random()}.db`);
     dbContext = new DatabaseContext(testDbPath);
     // Wait for database initialization
-    if (typeof dbContext.init === 'function') {
-      await dbContext.init();
-    }
-    todosTool = new TodosMcpTool(dbContext);
-  });
+    await new Promise(resolve => setTimeout(resolve, 100));
+      todosTool = new TodosMcpTool(dbContext);
+    });
 
   afterEach(async () => {
     // Clean up test database
