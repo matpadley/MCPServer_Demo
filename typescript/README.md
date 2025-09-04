@@ -168,4 +168,5 @@ This TypeScript implementation maintains functional parity with the .NET version
 - Update tool schemas when adding new MCP tools
 
 ## License
-Same as parent project
+
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.

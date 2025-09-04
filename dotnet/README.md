@@ -155,4 +155,4 @@ public async Task<string> CreateTodoAsync(
 - `MCPServer.Data/Todo.cs` - Todo entity definition
 
 ## License
-Same as parent project
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
