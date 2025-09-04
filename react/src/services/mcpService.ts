@@ -1,3 +1,4 @@
+// ...existing code...
 import { MCPResponse, MCPTool } from '../types';
 
 class MCPService {
@@ -8,7 +9,7 @@ class MCPService {
     this.serverUrl = serverUrl;
   }
 
-  async callTool(toolName: string, parameters: Record<string, any>): Promise<any> {
+  async callTool(toolName: string, parameters: Record<string, unknown>): Promise<unknown> {
     const request = {
       jsonrpc: '2.0',
       id: this.requestId++,

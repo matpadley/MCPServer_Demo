@@ -5,28 +5,30 @@ export interface Todo {
   completed?: boolean;
 }
 
-export interface MCPResponse<T = any> {
+export interface MCPResponse<T = unknown> {
   jsonrpc: string;
   id: number;
   result?: T;
   error?: {
     code: number;
     message: string;
-    data?: any;
+  data?: unknown;
   };
 }
 
+
 export interface MCPToolCall {
   name: string;
-  arguments: Record<string, any>;
+  arguments: Record<string, unknown>;
 }
+
 
 export interface MCPTool {
   name: string;
   description: string;
   inputSchema: {
     type: string;
-    properties: Record<string, any>;
+    properties: Record<string, unknown>;
     required?: string[];
   };
 }

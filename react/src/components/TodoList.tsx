@@ -145,11 +145,13 @@ export const TodoList: React.FC<Props> = ({ refreshTrigger }) => {
         
         return [
           <GridActionsCellItem
+            key="toggle-complete"
             icon={isCompleted ? <RadioButtonUnchecked /> : <CheckCircle />}
             label={isCompleted ? "Mark Incomplete" : "Mark Complete"}
             onClick={() => handleToggleComplete(params.id as number)}
           />,
           <GridActionsCellItem
+            key="delete"
             icon={<Delete />}
             label="Delete"
             onClick={() => handleDelete(params.id as number)}
