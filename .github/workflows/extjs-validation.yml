@@ -1,0 +1,105 @@
+name: ExtJS Client Validation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'extjs/**'
+      - '.github/workflows/extjs-validation.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'extjs/**'
+      - '.github/workflows/extjs-validation.yml'
+
+jobs:
+  validate:
+    name: ExtJS Client Validation
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./extjs
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          
+      - name: Install dependencies (if any)
+        run: |
+          if [ -f package.json ]; then
+            npm install
+          fi
+        
+      - name: Validate JavaScript syntax
+        run: |
+          echo "Validating JavaScript files..."
+          find . -name "*.js" -type f -exec node -c {} \; || exit 1
+          echo "✅ All JavaScript files have valid syntax"
+        
+      - name: Validate HTML structure
+        run: |
+          echo "Validating HTML files..."
+          if command -v tidy &> /dev/null; then
+            find . -name "*.html" -type f -exec tidy -q -e {} \; 2>&1 | grep -v "Warning:" || true
+          else
+            echo "HTML Tidy not available, checking basic HTML structure..."
+            for file in $(find . -name "*.html" -type f); do
+              if ! grep -q "<!DOCTYPE" "$file"; then
+                echo "❌ $file: Missing DOCTYPE declaration"
+                exit 1
+              fi
+              if ! grep -q "<html" "$file"; then
+                echo "❌ $file: Missing html tag"
+                exit 1
+              fi
+              echo "✅ $file: Basic HTML structure valid"
+            done
+          fi
+        
+      - name: Check ExtJS integration
+        run: |
+          echo "Checking ExtJS CDN references..."
+          if grep -r "ext-all" . --include="*.html" --include="*.js"; then
+            echo "✅ ExtJS CDN references found"
+          else
+            echo "⚠️ No ExtJS CDN references found - this might be intentional"
+          fi
+          
+      - name: Validate MCP integration points
+        run: |
+          echo "Checking MCP service integration..."
+          if grep -r "mcp" . --include="*.js" -i; then
+            echo "✅ MCP integration code found"
+          else
+            echo "❌ No MCP integration found in JavaScript files"
+            exit 1
+          fi
+          
+      - name: Generate validation report
+        run: |
+          echo "# ExtJS Client Validation Report" > validation-report.md
+          echo "" >> validation-report.md
+          echo "## Files Validated" >> validation-report.md
+          echo "- JavaScript files: $(find . -name '*.js' -type f | wc -l)" >> validation-report.md
+          echo "- HTML files: $(find . -name '*.html' -type f | wc -l)" >> validation-report.md
+          echo "- CSS files: $(find . -name '*.css' -type f | wc -l)" >> validation-report.md
+          echo "" >> validation-report.md
+          echo "## Structure Check" >> validation-report.md
+          echo "\`\`\`" >> validation-report.md
+          find . -type f \( -name "*.js" -o -name "*.html" -o -name "*.css" \) | head -20 >> validation-report.md
+          echo "\`\`\`" >> validation-report.md
+          cat validation-report.md
+          
+      - name: Upload validation results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: extjs-validation-results
+          path: |
+            extjs/validation-report.md

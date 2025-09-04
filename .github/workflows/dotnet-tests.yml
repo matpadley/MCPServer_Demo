@@ -1,0 +1,58 @@
+name: .NET Server Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'dotnet/**'
+      - '.github/workflows/dotnet-tests.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'dotnet/**'
+      - '.github/workflows/dotnet-tests.yml'
+
+jobs:
+  test:
+    name: .NET Server Testing
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./dotnet
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Restore dependencies
+        run: dotnet restore MCPServer.sln
+        
+      - name: Build solution
+        run: dotnet build MCPServer.sln --configuration Release --no-restore
+        
+      - name: Run tests
+        run: dotnet test MCPServer.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+        
+      - name: Generate test report
+        run: |
+          dotnet test MCPServer.sln --configuration Release --no-build --logger trx --results-directory TestResults/
+          
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dotnet-test-results
+          path: dotnet/TestResults/
+          
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dotnet-coverage-report
+          path: dotnet/TestResults/*/coverage.cobertura.xml

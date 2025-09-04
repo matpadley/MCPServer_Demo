@@ -4,9 +4,11 @@
   "description": "ExtJS client application for MCPServer Todo management",
   "main": "app.js",
   "scripts": {
-    "build": "echo 'ExtJS build process'",
+    "build": "echo 'ExtJS build process - no build required for CDN version'",
     "start": "python3 -m http.server 8080",
-    "dev": "python3 -m http.server 8080"
+    "dev": "python3 -m http.server 8080",
+    "test": "node validate.js",
+    "validate": "node validate.js"
   },
   "keywords": ["mcp", "extjs", "todos", "client"],
   "author": "",

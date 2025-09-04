@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-09-04T13:59:17.964Z",
+  "summary": {
+    "jsFiles": 2,
+    "htmlFiles": 1,
+    "errors": 0,
+    "warnings": 0
+  },
+  "mcpIntegration": true,
+  "extjsPatterns": true,
+  "details": {
+    "errors": [],
+    "warnings": [],
+    "patterns": {
+      "Ext.define": true,
+      "MCP Service": true,
+      "fetch API": true,
+      "JSON-RPC": true,
+      "MCP tools": true,
+      "Error handling": true,
+      "Todo operations": true
+    }
+  }
+}
