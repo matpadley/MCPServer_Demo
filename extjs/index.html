@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MCPServer ExtJS Client</title>
+    
+    <!-- ExtJS 7.x CDN -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.sencha.com/ext/gpl/7.5.0/classic/theme-neptune/resources/theme-neptune-all.css">
+    <script type="text/javascript" src="https://cdn.sencha.com/ext/gpl/7.5.0/ext-all.js"></script>
+    <script type="text/javascript" src="https://cdn.sencha.com/ext/gpl/7.5.0/classic/theme-neptune/theme-neptune.js"></script>
+    
+    <style>
+        .todo-completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        
+        .mcp-status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .mcp-status.connected {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .mcp-status.disconnected {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript" src="app.js"></script>
+</body>
+</html>

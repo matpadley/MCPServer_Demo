@@ -1,0 +1,19 @@
+{
+  "name": "mcpserver-extjs-client",
+  "version": "1.0.0",
+  "description": "ExtJS client application for MCPServer Todo management",
+  "main": "app.js",
+  "scripts": {
+    "build": "echo 'ExtJS build process - no build required for CDN version'",
+    "start": "python3 -m http.server 8080",
+    "dev": "python3 -m http.server 8080",
+    "test": "node validate.js",
+    "validate": "node validate.js"
+  },
+  "keywords": ["mcp", "extjs", "todos", "client"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

@@ -1,6 +1,6 @@
 
 
-name: MCPServer CI
+name: Multi-Platform Build & Test
 
 on:
   push:
@@ -15,17 +15,106 @@ on:
       - '.vscode/*.json'
 
 jobs:
-  build:
-    runs-on: windows-latest
+  build-dotnet:
+    name: Build .NET Server
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Check for .NET changes
+        id: dotnet-changes
+        run: |
+          if [ "${{ github.event_name }}" == "push" ] || git diff --name-only ${{ github.event.before }}..${{ github.sha }} | grep -q "^dotnet/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
       - name: Setup .NET
+        if: steps.dotnet-changes.outputs.changed == 'true'
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
       - name: Restore dependencies
-        run: dotnet restore MCPServer.sln
+        if: steps.dotnet-changes.outputs.changed == 'true'
+        run: dotnet restore dotnet/MCPServer.sln
       - name: Build
-        run: dotnet build MCPServer.sln --configuration Release --no-restore
+        if: steps.dotnet-changes.outputs.changed == 'true'
+        run: dotnet build dotnet/MCPServer.sln --configuration Release --no-restore
+
+  build-typescript:
+    name: Build TypeScript Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check for TypeScript changes
+        id: typescript-changes
+        run: |
+          if [ "${{ github.event_name }}" == "push" ] || git diff --name-only HEAD~1 | grep -q "^typescript/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Setup Node.js
+        if: steps.typescript-changes.outputs.changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: './typescript/package-lock.json'
+      - name: Install dependencies
+        if: steps.typescript-changes.outputs.changed == 'true'
+        run: cd typescript && npm ci
+      - name: Build
+        if: steps.typescript-changes.outputs.changed == 'true'
+        run: cd typescript && npm run build
+
+  build-react:
+    name: Build React Client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check for React changes
+        id: react-changes
+        run: |
+          if [ "${{ github.event_name }}" == "push" ] || git diff --name-only HEAD~1 | grep -q "^react/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Setup Node.js
+        if: steps.react-changes.outputs.changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: './react/package-lock.json'
+      - name: Install dependencies
+        if: steps.react-changes.outputs.changed == 'true'
+        run: cd react && npm ci
+      - name: Build
+        if: steps.react-changes.outputs.changed == 'true'
+        run: cd react && npm run build
+
+  validate-extjs:
+    name: Validate ExtJS Client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check for ExtJS changes
+        id: extjs-changes
+        run: |
+          if [ "${{ github.event_name }}" == "push" ] || git diff --name-only HEAD~1 | grep -q "^extjs/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Validate JavaScript syntax
+        if: steps.extjs-changes.outputs.changed == 'true'
+        run: |
+          cd extjs
+          find . -name "*.js" -type f -exec node -c {} \; || exit 1
+          echo "✅ ExtJS JavaScript files validated"
     

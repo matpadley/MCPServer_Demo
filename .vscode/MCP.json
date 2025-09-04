@@ -1,8 +1,13 @@
 {
   "servers": {
-    "MCPServer_Local": {
+    "MCPServer_DotNet": {
       "type": "http",
       "url": "http://localhost:5226/api/mcp"
+    },
+    "MCPServer_TypeScript": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["typescript/dist/index.js"]
     }
   }
 }
