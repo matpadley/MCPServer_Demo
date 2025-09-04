@@ -17,8 +17,10 @@ describe('TodosMcpTool', () => {
     // Create a unique test database for each test
     testDbPath = path.join(__dirname, `test-${Date.now()}-${Math.random()}.db`);
     dbContext = new DatabaseContext(testDbPath);
-    // Wait a bit for database initialization
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Wait for database initialization
+    if (typeof dbContext.init === 'function') {
+      await dbContext.init();
+    }
     todosTool = new TodosMcpTool(dbContext);
   });
 
